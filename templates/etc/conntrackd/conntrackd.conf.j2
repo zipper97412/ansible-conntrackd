@@ -75,20 +75,20 @@ Sync {
 	#	iptables -I INPUT -d 225.0.0.50 -j ACCEPT
 	#	iptables -I OUTPUT -d 225.0.0.50 -j ACCEPT
 	#
-	Multicast {
+	# Multicast {
 		#
 		# Multicast address: The address that you use as destination
 		# in the synchronization messages. You do not have to add
 		# this IP to any of your existing interfaces. If any doubt,
 		# do not modify this value.
 		#
-		IPv4_address 225.0.0.50
+		# IPv4_address 225.0.0.50
 
 		#
 		# The multicast group that identifies the cluster. If any
 		# doubt, do not modify this value.
 		#
-		Group 3780
+		# Group 3780
 
 		#
 		# IP address of the interface that you are going to use to
@@ -96,14 +96,14 @@ Sync {
 		# use a dedicated link for the synchronization messages.
 		#
 #		IPv4_interface 192.168.100.100
-		IPv4_interface {{ conntrackd_sync_ip }}
+		#IPv4_interface {{ conntrackd_sync_ip }}
 
 		#
 		# The name of the interface that you are going to use to
 		# send the synchronization messages.
 		#
 #		Interface eth2
-		Interface {{ conntrackd_sync_int }}
+		#Interface {{ conntrackd_sync_int }}
 
 		# The multicast sender uses a buffer to enqueue the packets
 		# that are going to be transmitted. The default size of this
@@ -115,7 +115,7 @@ Sync {
 		# of the sender buffer. The default size is usually around
 		# ~100 KBytes which is fairly small for busy firewalls.
 		#
-		SndSocketBuffer 1249280
+		#SndSocketBuffer 1249280
 
 		# The multicast receiver uses a buffer to enqueue the packets
 		# that the socket is pending to handle. The default size of this
@@ -127,15 +127,15 @@ Sync {
 		# the receiver buffer. The default size is usually around
 		# ~100 KBytes which is fairly small for busy firewalls.
 		#
-		RcvSocketBuffer 1249280
+		#RcvSocketBuffer 1249280
 
 		#
 		# Enable/Disable message checksumming. This is a good
 		# property to achieve fault-tolerance. In case of doubt, do
 		# not modify this value.
 		#
-		Checksum on
-	}
+		#Checksum on
+	#}
 	#
 	# You can specify more than one dedicated link. Thus, if one dedicated
 	# link fails, conntrackd can fail-over to another. Note that adding
@@ -161,11 +161,11 @@ Sync {
 	# Note that you cannot use unicast UDP and Multicast at the same
 	# time, you can only select one.
 	#
-	# UDP {
+	UDP Default {
 		#
 		# UDP address that this firewall uses to listen to events.
 		#
-		# IPv4_address 192.168.2.100
+		IPv4_address {{ conntrackd_listen_address }}
 		#
 		# or you may want to use an IPv6 address:
 		#
@@ -175,7 +175,7 @@ Sync {
 		# Destination UDP address that receives events, ie. the other
 		# firewall's dedicated link address.
 		#
-		# IPv4_Destination_Address 192.168.2.101
+		IPv4_Destination_Address {{ conntrackd_peer_address }}
 		#
 		# or you may want to use an IPv6 address:
 		#
@@ -184,29 +184,29 @@ Sync {
 		#
 		# UDP port used
 		#
-		# Port 3780
+		Port {{ conntrackd_listen_udp_port }}
 
 		#
 		# The name of the interface that you are going to use to
 		# send the synchronization messages.
 		#
-		# Interface eth2
+		Interface {{ conntrackd_link_interface }}
 
 		#
 		# The sender socket buffer size
 		#
-		# SndSocketBuffer 1249280
+		SndSocketBuffer 24985600
 
 		#
 		# The receiver socket buffer size
 		#
-		# RcvSocketBuffer 1249280
+		RcvSocketBuffer 24985600
 
 		#
 		# Enable/Disable message checksumming.
 		#
-		# Checksum on
-	# }
+		Checksum on
+	}
 
 	#
 	# Other unsorted options that are related to the synchronization.
@@ -254,6 +254,9 @@ General {
 	#
 	Nice -20
 
+	# compatibilité systemd
+	Systemd on 
+	
 	#
 	# Select a different scheduler for the daemon, you can select between
 	# RR and FIFO and the process priority (minimum is 0, maximum is 99).
@@ -391,8 +394,8 @@ General {
 			TCP
 			SCTP
 			DCCP
-			# UDP
-			# ICMP # This requires a Linux kernel >= 2.6.31
+			#UDP
+			#ICMP # This requires a Linux kernel >= 2.6.31
 			# IPv6-ICMP # This requires a Linux kernel >= 2.6.31
 		}
 
